@@ -1,2 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using WebScraperFDDB;
+using WebScraperFDDB.Fruits;
+
+IScraper<FruitsBaseModel> fruitsScraper = new FruitsScraper();
+var fruitsBaseModel = fruitsScraper.GetBaseDataFromHtmlTable();
+
+Console.ReadKey();
