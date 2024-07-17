@@ -1,4 +1,5 @@
 ﻿namespace WebScraperFDDB.Fruits
 {
-    public record FruitsBaseModel(string Name, string Href);
+    public record FruitsBaseModel(string Name,
+                                  string Href);
 }

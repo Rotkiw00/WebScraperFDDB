@@ -35,5 +35,51 @@ namespace WebScraperFDDB.Fruits
                 }
             }
         }
+
+        public static FruitsDetailModel GetDetailedDataFromHtmlTableByHref(FruitsBaseModel model)
+        {
+            HtmlWeb htmlWeb = new();
+            HtmlDocument detailedHtmlDocument = new();
+
+            // need to get data from three tables
+            /*
+             * 1. Data for 100 g (Calorific value, Calories, Protein, Carbo., Fat),
+             *  // those below - later
+             * 2. Vitamins (any as a string),
+             * 3. Minerals (any as a string),
+             */
+
+            detailedHtmlDocument = htmlWeb.Load(model.Href);
+
+            List<string> dataFor100g_selectors =
+            [
+                "#content > div.mainblock > div.leftblock > div > div > div:nth-child(2) > div:nth-child(2)", // CALORIFIC VALUE [kJ]
+                "#content > div.mainblock > div.leftblock > div > div > div:nth-child(2) > div:nth-child(3)", // CALORIES [kcal]
+                "#content > div.mainblock > div.leftblock > div > div > div:nth-child(2) > div:nth-child(4)", // PROTEIN [g]
+                "#content > div.mainblock > div.leftblock > div > div > div:nth-child(2) > div:nth-child(5)", // CARBOHYDARTES [g]
+                "#content > div.mainblock > div.leftblock > div > div > div:nth-child(2) > div:nth-child(7)"  // FAT [g]
+            ];
+            
+                        
+            var dataFor100g = GetData100gBySelector(detailedHtmlDocument, dataFor100g_selectors).ToList();
+
+            return new FruitsDetailModel(model.Name,
+                                         dataFor100g[0],
+                                         dataFor100g[1],
+                                         dataFor100g[2],
+                                         dataFor100g[3],
+                                         dataFor100g[4]);
+        }
+
+        static IEnumerable<string> GetData100gBySelector(HtmlDocument detailedHtmlDocument,
+                                                             List<string> dataFor100g_selectors)
+        {
+            foreach (string selector in dataFor100g_selectors)
+            {
+                yield return detailedHtmlDocument.QuerySelector(selector)
+                                                 .QuerySelectorAll("div")[2].InnerText.Split(' ')
+                                                                                      .FirstOrDefault();
+            }
+        }
     }
 }
